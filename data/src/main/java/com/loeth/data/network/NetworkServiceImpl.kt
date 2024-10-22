@@ -1,6 +1,6 @@
 package com.loeth.data.network
 
-import com.loeth.data.DataProductModel
+import com.loeth.data.model.DataProductModel
 import com.loeth.domain.model.Product
 import com.loeth.domain.network.NetworkService
 import com.loeth.domain.network.ResultWrapper
@@ -8,33 +8,44 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.plugins.ServerResponseException
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.header
 import io.ktor.client.request.request
 import io.ktor.http.ContentType
 import io.ktor.http.HttpMethod
 import io.ktor.http.Parameters
 import io.ktor.http.contentType
+import io.ktor.serialization.kotlinx.json.json
 import io.ktor.utils.io.InternalAPI
+import kotlinx.serialization.json.Json
 
-class NetworkServiceImpl(val client: HttpClient): NetworkService {
+
+class NetworkServiceImpl(val client: HttpClient) : NetworkService {
+
+//    // Initialize HttpClient with JSON serialization support
+//     val client = HttpClient {
+//        install(ContentNegotiation) {
+//            json(Json { ignoreUnknownKeys = true }) // Handle unknown keys
+//        }
+//    }
     override suspend fun getProducts(): ResultWrapper<List<Product>> {
         return makeWebRequest(
             url = "https://fakestoreapi.com/products",
             method = HttpMethod.Get,
             mapper = { dataModels: List<DataProductModel> ->
-                dataModels.map{ it.toProduct()}
+                dataModels.map { it.toProduct() }
             }
         )
     }
 
     @OptIn(InternalAPI::class)
-    suspend inline fun<reified T, R> makeWebRequest(
+    suspend inline fun <reified T, R> makeWebRequest(
         url: String,
         method: HttpMethod,
         body: Any? = null,
         headers: Map<String, String> = emptyMap(),
         parameters: Map<String, String> = emptyMap(),
-        noinline mapper:((T) ->R)? = null
+        noinline mapper: ((T) -> R)? = null
     ): ResultWrapper<R> {
         return try {
             val response = client.request(url) {
@@ -71,4 +82,5 @@ class NetworkServiceImpl(val client: HttpClient): NetworkService {
             ResultWrapper.Failure(e)
         }
     }
+
 }

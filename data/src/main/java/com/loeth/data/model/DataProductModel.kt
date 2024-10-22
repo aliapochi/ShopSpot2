@@ -1,6 +1,5 @@
-package com.loeth.data
+package com.loeth.data.model
 
-import com.loeth.domain.model.Product
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -13,7 +12,7 @@ class DataProductModel
         val description: String,
         val image: String,
     ) {
-        fun toProduct() = Product(
+        fun toProduct() = com.loeth.domain.model.Product(
             id = id,
             title = title,
             price = price,

@@ -1,5 +1,7 @@
 package com.loeth.data.di
 
+import com.loeth.data.network.NetworkServiceImpl
+import com.loeth.domain.network.NetworkService
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.engine.cio.CIO
@@ -23,5 +25,10 @@ val networkModule = module {
                 level = LogLevel.ALL
             }
         }
+    }
+
+    single<NetworkService> {
+        NetworkServiceImpl(get())
+
     }
 }
