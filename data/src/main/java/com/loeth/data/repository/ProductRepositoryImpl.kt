@@ -6,7 +6,7 @@ import com.loeth.domain.network.ResultWrapper
 import com.loeth.domain.repository.ProductRepository
 
 class ProductRepositoryImpl(private val networkService: NetworkService): ProductRepository {
-    override suspend fun getProduct(): ResultWrapper<List<Product>> {
-        return networkService.getProducts()
+    override suspend fun getProduct(category: String?): ResultWrapper<List<Product>> {
+        return networkService.getProducts(category)
     }
 }

@@ -8,33 +8,35 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.plugins.ServerResponseException
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.header
 import io.ktor.client.request.request
 import io.ktor.http.ContentType
 import io.ktor.http.HttpMethod
 import io.ktor.http.Parameters
 import io.ktor.http.contentType
-import io.ktor.serialization.kotlinx.json.json
 import io.ktor.utils.io.InternalAPI
-import kotlinx.serialization.json.Json
 
 
 class NetworkServiceImpl(val client: HttpClient) : NetworkService {
+    private val baseUrl = "https://fakestoreapi.com"
+    override suspend fun getProducts(category: String?): ResultWrapper<List<Product>> {
+        val url =
+            if (category != null) "$baseUrl/products/category/$category" else "$baseUrl/products"
 
-//    // Initialize HttpClient with JSON serialization support
-//     val client = HttpClient {
-//        install(ContentNegotiation) {
-//            json(Json { ignoreUnknownKeys = true }) // Handle unknown keys
-//        }
-//    }
-    override suspend fun getProducts(): ResultWrapper<List<Product>> {
         return makeWebRequest(
-            url = "https://fakestoreapi.com/products",
+            url = url,
             method = HttpMethod.Get,
             mapper = { dataModels: List<DataProductModel> ->
                 dataModels.map { it.toProduct() }
             }
+        )
+    }
+
+    override suspend fun getCategories(): ResultWrapper<List<String>> {
+        val url = "$baseUrl/products/categories"
+        return makeWebRequest<List<String>, List<String>>(
+            url = url,
+            method = HttpMethod.Get,
         )
     }
 
